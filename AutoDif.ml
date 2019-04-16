@@ -18,5 +18,22 @@ module Diff = struct
   let init x = 
     let id _ = [||] in
     {value=x; children=[||]; op=id; cur_grad=0.0;grad=0.0}
-  let print = failwith "Unimplemented"
+
+    (** Input is in fully evaluated form *)
+  let print (input:string) : unit = 
+    match (String.split_on_char ' ' input)with
+    | "add"::"("::"mult"::arg1::arg2::")"::arg3::rest -> 
+      print_endline arg1; print_string " "; print_endline "\\"; 
+      print_string "  "; print_endline "*";
+      print_string " /"; print_endline " \\"; print_string arg2; 
+      print_endline "   \\"; print_endline "     +"; 
+      print_endline "    /"; print_string "   "; print_endline arg3;
+    | "add"::arg1::arg2::rest -> print_endline arg1; print_string " ";
+      print_endline "\\"; print_string "  "; print_endline "+";
+      print_string " "; print_endline "/"; print_endline arg2; 
+    | "mult"::arg1::arg2::rest -> print_endline arg1; print_string " ";
+      print_endline "\\"; print_string "  "; print_endline "*";
+      print_string " "; print_endline "/"; print_endline arg2; 
+    | [single_char] -> print_endline single_char;
+    | _ -> failwith "Error Invalid Input"
   end
