@@ -10,8 +10,8 @@ let get_children x = x.children
 
 let get_op x = x.op
 
+(** [get_cur_grad x] is the float stored in the cur_grad parameter of x *)
 let get_cur_grad x = x.cur_grad
-
 
 let get_grad x = x.grad
 
@@ -59,7 +59,9 @@ let print (input:string) : unit =
 
 module StdOps = struct
   let add arg0 arg1 =
-    let add_grad children = [|1.0;1.0|] in
+    let add_grad children = 
+      assert (Array.length children = 2);
+      [|1.0;1.0|] in
     let v = arg0.value +. arg1.value in
     {value=v; children=[|arg0;arg1|]; op=add_grad; cur_grad=1.0; grad=0.0}
 
@@ -70,6 +72,28 @@ module StdOps = struct
       [|children.(1).value; children.(0).value|] in
     let v=arg0.value *. arg1.value in
     {value=v; children=[|arg0; arg1|]; op=mul_grad; cur_grad=1.0;grad=0.0}
+
+  let pow arg0 fl =
+    let pow_grad children =
+      assert (Array.length children = 1);
+      [|fl *. (children.(0).value ** (fl -. 1.0))|] in
+    let v = arg0.value ** fl in
+    {value=v; children=[|arg0|]; op=pow_grad; cur_grad=1.0;grad=0.0}
+
+  let sin arg0 =
+    let sin_grad children =
+      assert (Array.length children = 1);
+      [|Pervasives.cos children.(0).value|] in
+    let v = Pervasives.sin arg0.value in
+    {value=v; children=[|arg0|]; op=sin_grad; cur_grad=1.0;grad=0.0}
+
+  let cos arg0 =
+    let cos_grad children =
+      assert (Array.length children = 1);
+      [|-. Pervasives.sin children.(0).value|] in
+    let v = Pervasives.cos arg0.value in
+    {value=v; children=[|arg0|]; op=cos_grad; cur_grad=1.0;grad=0.0}
+
 end
 
 module Model = struct
@@ -92,14 +116,15 @@ module Optim = struct
         function
         | [] -> ()
         | h::t -> h.value <- h.value -. lr *. h.grad; grad_helper t
-    in grad_helper params in
+      in grad_helper params in
     {step=step_grad; params=params}
 
   let step optimizer = optimizer.step()
 
   let zero_grad optimizer =
     let rec zero_grad_helper = function
-    | [] -> ()
-    | h::t -> h.grad <- 0.0; zero_grad_helper t
-  in zero_grad_helper optimizer.params
+      | [] -> ()
+      | h::t -> h.grad <- 0.0; zero_grad_helper t
+    in zero_grad_helper optimizer.params
 end
+
