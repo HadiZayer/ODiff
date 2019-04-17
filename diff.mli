@@ -63,8 +63,10 @@ val init : float -> var
 
 val forward : model -> var -> var
 
-(** [backward x] updates the variables asociated with  *)
+(** [backward x] runs backwards propagation, with x as a starting point. *)
 val backward : var -> unit
+
+val print : string -> unit
 
 module StdOps : sig
 
@@ -80,11 +82,11 @@ module StdOps : sig
       of 1.0, and a grad of 0.0 *)
   val mul : var -> var -> var
 
-  val pow : var -> var -> var
+  val pow : var -> float -> var
 
-  val sin : var -> var -> var
+  val sin : var -> var
 
-  val cos : var -> var -> var
+  val cos : var -> var
 end
 
 module Model : sig
