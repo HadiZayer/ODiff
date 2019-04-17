@@ -27,15 +27,20 @@ let model_params m =
   m.params (*TODO: decide where to locate this + add to mli*)
 
 
-let rec backward arg0 : unit=
-  let grads = arg0.op arg0.children in
-  for i = 0 to Array.length arg0.children - 1 do
-    arg0.children.(i).cur_grad <- grads.(i) *. arg0.cur_grad;
-    arg0.children.(i).grad <- arg0.children.(i).grad
-                              +. arg0.children.(i).cur_grad;
-    backward arg0.children.(i);
-    arg0.children.(i).cur_grad <- 1.0;
-  done
+let backward arg0 : unit=
+  let rec backward_helper arg : unit =
+    let grads = arg.op arg.children in
+    for i = 0 to Array.length arg.children - 1 do
+      arg.children.(i).cur_grad <- grads.(i) *. arg.cur_grad;
+      arg.children.(i).grad <- arg.children.(i).grad
+                               +. arg.children.(i).cur_grad;
+      backward_helper arg.children.(i);
+      (* arg0.children.(i).cur_grad <- 1.0; *)
+    done
+  in
+  arg0.cur_grad <- 1.0;
+  arg0.grad <- arg0.grad +. arg0.cur_grad;
+  backward_helper arg0
 
 
 (** Input is in fully evaluated form *)
