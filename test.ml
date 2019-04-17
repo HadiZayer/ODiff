@@ -10,7 +10,7 @@ let approx_eq (f1:float) (f2:float) : bool =
 (** [ make_backward_test (name:string) (input:float) 
   (expected_output:float)]  constructs an OUnit test named [name] 
   that asserts the quality of [expected_output] with 
- ERRPR [start_room adv]. *) 
+  [approx_eq input expected_output. *) 
 let make_backward_test (name:string) (input:float) 
 (expected_output:float) =
 name >::(fun _ -> assert_equal (approx_eq input expected_output) true)
