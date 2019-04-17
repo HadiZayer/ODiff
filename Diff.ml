@@ -1,14 +1,14 @@
 
 type diff = {value: float; children : diff array; 
-op: diff array -> float array; mutable cur_grad : float; mutable grad : float}
+             op: diff array -> float array; mutable cur_grad : float; mutable grad : float}
 
-let get_value x = dif.value
+let get_value x = x.value
 
-let get_children x = dif.children
+let get_children x = x.children
 
-let get_op x = dif.op
+let get_op x = x.op
 
-let get_cur_grad x = dif.cur_grad
+let get_cur_grad x = x.cur_grad
 
 let add arg0 arg1 =
   let add_grad children = [|1.0;1.0|] in
@@ -29,7 +29,7 @@ let init x =
   {value=x; children=[||]; op=id; cur_grad=0.0;grad=0.0}
 
 
-  (** Input is in fully evaluated form *)
+(** Input is in fully evaluated form *)
 let print (input:string) : unit = 
   match (String.split_on_char ' ' input)with
   | "add"::"("::"mult"::arg1::arg2::")"::arg3::rest -> 
