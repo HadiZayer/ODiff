@@ -1,6 +1,6 @@
 
-type diff = {value: float; children : diff array; 
-op: diff array -> float array; mutable cur_grad : float; mutable grad : float}
+type var = {value: float; children : var array; 
+             op: var array -> float array; mutable cur_grad : float; mutable grad : float}
 
 let get_value x = x.value
 
@@ -10,6 +10,20 @@ let get_op x = x.op
 
 let get_cur_grad x = x.cur_grad
 
+
+let add arg0 arg1 =
+  let add_grad children = [|1.0;1.0|] in
+  let v = arg0.value +. arg1.value in
+  {value=v; children=[|arg0;arg1|]; op=add_grad; cur_grad=0.0; grad=0.0}
+
+
+let mul arg0 arg1 =
+  let mul_grad children = 
+    assert (Array.length children = 2);
+    [|children.(1).value; children.(0).value|] in
+  let v=arg0.value *. arg1.value in
+  {value=v; children=[|arg0; arg1|]; op=mul_grad; cur_grad=0.0;grad=0.0}
+
 let get_grad x = x.grad
 
 let init x = 
@@ -17,6 +31,7 @@ let init x =
   {value=x; children=[||]; op=id; cur_grad=0.0;grad=0.0}
 
   (** Input is in fully evaluated form *)
+
 let print (input:string) : unit = 
   match (String.split_on_char ' ' input)with
   | "add"::"("::"mult"::arg1::arg2::")"::arg3::rest -> 
