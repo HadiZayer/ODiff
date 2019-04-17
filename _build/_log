@@ -1,0 +1,15 @@
+### Starting build.
+Backtrace:
+                      - Failed to build the target diff.cmo
+                          - Building diff.cmo:
+                              - Failed to build all of these:
+                                  - Building diff.ml:
+                                      - Failed to build all of these:
+                                          - Building diff.mly
+                                          - Building diff.mll
+                                  - Building diff.mli:
+                                      - Building diff.mly
+                                  - Building diff.mlpack
+                                  - Building diff.mli:
+                                      - Building diff.mly
+# Compilation unsuccessful.
