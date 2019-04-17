@@ -1,6 +1,6 @@
 
 type var (* var *)
-
+type model (* model for parameters *)
 (** [get_value x] is the float stored in the value parameter of x *)
 val get_value : var -> float
 
@@ -37,4 +37,11 @@ val add : var -> var -> var
 val mul : var -> var -> var
 end
 
+module Model : sig
+  val linear_model : float -> float -> model
+end
+
+(* module Optim : sig
+  val 
+end *)
 

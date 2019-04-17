@@ -2,6 +2,8 @@
 type var = {value: float; children : var array; 
              op: var array -> float array; mutable cur_grad : float; mutable grad : float}
 
+type model = {params: var list; forward: var -> var}
+
 let get_value x = x.value
 
 let get_children x = x.children
@@ -29,6 +31,9 @@ let get_grad x = x.grad
 let init x = 
   let id _ = [||] in
   {value=x; children=[||]; op=id; cur_grad=0.0;grad=0.0}
+
+let forward m x = 
+  m.forward x
 
   (** Input is in fully evaluated form *)
 
@@ -63,4 +68,15 @@ let mul arg0 arg1 =
     [|children.(1).value; children.(0).value|] in
   let v=arg0.value *. arg1.value in
   {value=v; children=[|arg0; arg1|]; op=mul_grad; cur_grad=0.0;grad=0.0}
+end
+
+module Model = struct
+  let linear_model slope offset =
+    let w = init slope in
+    let b = init offset in
+    let params = [w;b] in
+    let forward x =
+      StdOps.(add (mul w x) b)
+    in
+    {params=params; forward=forward}
 end
