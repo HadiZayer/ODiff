@@ -70,6 +70,12 @@ module StdOps = struct
     let v = arg0.value +. arg1.value in
     {value=v; children=[|arg0;arg1|]; op=add_grad; cur_grad=1.0; grad=0.0}
 
+  let sub arg0 arg1 =
+    let add_grad children = 
+      assert (Array.length children = 2);
+      [|1.0;-1.0|] in
+    let v = arg0.value -. arg1.value in
+    {value=v; children=[|arg0;arg1|]; op=add_grad; cur_grad=1.0; grad=0.0}
 
   let mul arg0 arg1 =
     let mul_grad children = 

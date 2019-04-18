@@ -66,6 +66,8 @@ val forward : model -> var -> var
 (** [backward x] runs backwards propagation, with x as a starting point. *)
 val backward : var -> unit
 
+val model_params : model -> var list
+
 val print : string -> unit
 
 module StdOps : sig
@@ -76,7 +78,9 @@ module StdOps : sig
   *)
   val add : var -> var -> var	
 
-  (** [add arg0 arg1] is the var record with a value of the product of the 
+  val sub : var -> var -> var 
+
+  (** [mul arg0 arg1] is the var record with a value of the product of the 
       values of arg0 and arg1, children of the array containing arg0 and arg1,
       op of a function that yields an array [arg1.value;arg2.value], a cur_grad
       of 1.0, and a grad of 0.0 *)
@@ -96,5 +100,6 @@ end
 module Optim : sig
   type optim
   val step : optim -> unit
+  val zero_grad : optim -> unit
   val gd : var list -> float -> optim
 end
