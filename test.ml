@@ -51,17 +51,98 @@ let ans_eq3 = get_grad eq3_var1
 (* Setting up test for 3sin(3x)  *)
 let eq4_var1 = init 42. 
 let eq4_var2 = init 3. 
-let eq4_output = StdOps.mul (StdOps.sin (StdOps.mul eq4_var1 eq4_var2)) eq4_var2
+let eq4_output = StdOps.mul (StdOps.sin 
+(StdOps.mul eq4_var1 eq4_var2)) eq4_var2
 let () = backward eq4_output
 let ans_eq4 = get_grad eq4_var1
 
+(* Setting up test for x^8  *)
+let eq5_var1 = init 42. 
+let eq5_output = StdOps.pow eq5_var1 8.
+let () = backward eq5_output
+let ans_eq5 = get_grad eq5_var1
+
+(* Setting up test for x^15  *)
+let eq6_var1 = init 42. 
+let eq6_output = StdOps.pow eq6_var1 15.
+let () = backward eq6_output
+let ans_eq6 = get_grad eq6_var1
+
+(* Setting up test for sin x  *)
+let eq7_var1 = init 42. 
+let eq7_output = StdOps.sin eq7_var1
+let () = backward eq7_output
+let ans_eq7 = get_grad eq7_var1
+
+(* Setting up test for sin 3x  *)
+let eq8_var1 = init 42. 
+let eq8_var2 = init 3. 
+let eq8_output = StdOps.sin (StdOps.mul eq8_var1 eq8_var2)
+let () = backward eq8_output
+let ans_eq8 = get_grad eq8_var1
+
+(* Setting up test for cos x  *)
+let eq9_var1 = init 42. 
+let eq9_output = StdOps.cos eq9_var1
+let () = backward eq9_output
+let ans_eq9 = get_grad eq9_var1
+
+(* Setting up test for cos 3x  *)
+let eq10_var1 = init 42. 
+let eq10_var2 = init 3. 
+let eq10_output = StdOps.cos (StdOps.mul eq10_var1 eq10_var2)
+let () = backward eq10_output
+let ans_eq10 = get_grad eq10_var1
+
+(* Setting up test for 3cos(3x)  *)
+let eq11_var1 = init 42. 
+let eq11_var2 = init 3. 
+let eq11_output = StdOps.mul (StdOps.cos 
+(StdOps.mul eq11_var1 eq11_var2)) eq11_var2
+let () = backward eq11_output
+let ans_eq11 = get_grad eq11_var1
+
+(* Setting up test for (sinx)(cosx)  *)
+let eq12_var1 = init 42. 
+let eq12_output = StdOps.mul (StdOps.cos 
+eq12_var1) (StdOps.sin eq12_var1) 
+let () = backward eq12_output
+let ans_eq12 = get_grad eq12_var1
+
+(* Setting up test for (cosx)^4  *)
+let eq13_var1 = init 42. 
+let eq13_output = StdOps.pow (StdOps.cos eq13_var1) 4.
+let () = backward eq13_output
+let ans_eq13 = get_grad eq13_var1
+
+(* Setting up test for (cosx)^2 + 4x + 4 *)
+let eq14_var1 = init 42. 
+let eq14_var2 = init 4. 
+let eq14_output = StdOps.add (StdOps.add (StdOps.pow (StdOps.cos eq14_var1) 2.)
+eq14_var2) (StdOps.mul eq14_var1 eq14_var2)
+let () = backward eq14_output
+let ans_eq14 = get_grad eq14_var1
+
 let backward_tests = [
-  make_backward_test "testing x*x" ans_x2 84.;
-  make_backward_test "testing x" ans_x 1.;
-  make_backward_test "testing x*x+4" ans_eq1 84.;
-  make_backward_test "testing x*x+x+4" ans_eq2 85.;
-  make_backward_test "testing x^4" ans_eq3 296352.;
-  make_backward_test "testing  3 sin x" ans_eq4 8.49586;
+  make_backward_test "testing simple polynomial x*x" ans_x2 84.;
+  make_backward_test "testing simple linear x" ans_x 1.;
+  make_backward_test "testing medium polynomial x*x+4" ans_eq1 84.;
+  make_backward_test "testing hard polynomial x*x+x+4" ans_eq2 85.;
+  make_backward_test "testing small power x^4" ans_eq3 296352.;
+  make_backward_test "testing medium power x^8" ans_eq5 1844314665984.;
+  make_backward_test "testing large power x^15" ans_eq6 797225762616485973442560.;
+  make_backward_test "testing simple sin x" ans_eq7 (-0.39998531498);
+  make_backward_test "testing medium sin 3x" ans_eq8 2.83195241746;
+  make_backward_test "testing complex 3 sin 3x" ans_eq4 8.49586;
+  make_backward_test "testing simple cos x" ans_eq9 0.91652154791;
+  make_backward_test "testing medium cos 3x" ans_eq10 (-0.98997247702);
+  make_backward_test "testing complex 3 cos 3x" ans_eq11 (-2.96991743106);
+  make_backward_test "testing complex combination 1 sinxcosx" 
+  ans_eq12 (-0.68002349558);
+  make_backward_test "testing complex combination 2 (cos x)^4" 
+  ans_eq13 (-0.23460367);
+  make_backward_test "testing complex combination 3 (cosx)^2 + 4x + 4" 
+  ans_eq14 3.26680967993;
 ]
 
 let suite = 
