@@ -103,3 +103,14 @@ module Optim : sig
   val zero_grad : optim -> unit
   val gd : var list -> float -> optim
 end
+
+module Math : sig
+
+  type mat = float array array
+  exception InvalidDims
+
+  val mat_mul : mat -> mat -> mat
+  val mat_add : mat -> mat -> mat
+  val mat_sub : mat -> mat -> mat
+  val scale : float -> mat -> mat 
+end
