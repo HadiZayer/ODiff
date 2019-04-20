@@ -109,8 +109,20 @@ module Math : sig
   type mat = float array array
   exception InvalidDims
 
+  (**[matmul a b] takes a matrix of size m x n and matrix of size n x z
+   * returns the outer product of the matrices with size m x z
+   * raises: InvalidDims if a's second dim doesn't agree with b second dim*)
   val mat_mul : mat -> mat -> mat
+
+  (**[mat_add a b] takes two matrices of the same size and returns the sum
+   * raises: InvalidDims if a and b don't have the same size*)  
   val mat_add : mat -> mat -> mat
+
+  (**[mat_add a b] takes two matrices of the same size and returns the
+   * subtraction
+   * raises: InvalidDims if a and b don't have the same size*)
   val mat_sub : mat -> mat -> mat
+
+  (**[scale c M] returns the matrix M scaled by c (cM)*)
   val scale : float -> mat -> mat 
 end
