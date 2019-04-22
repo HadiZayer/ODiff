@@ -1,3 +1,5 @@
+type mat = (float array) array
+
 type var = {mutable value: float; children : var array; 
             op: var array -> float array; mutable cur_grad : float; mutable grad : float}
 
@@ -139,7 +141,6 @@ module Optim = struct
 end
 
 module Math = struct
-  type mat = (float array) array
   exception InvalidDims
 
   let mat_mul (m0:mat) (m1:mat) : mat =
@@ -157,31 +158,31 @@ module Math = struct
 
   let mat_add (mat1:mat) (mat2:mat):mat = 
     if (Array.length mat1 <> Array.length mat2) ||
-      (Array.length mat1.(0) <> Array.length mat2.(0)) 
-      then raise InvalidDims 
-      else
-    let mat3 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat3.(i).(j) <- mat2.(i).(j) +. mat1.(i).(j);
-      done
-    done 
-            ; mat3
+       (Array.length mat1.(0) <> Array.length mat2.(0)) 
+    then raise InvalidDims 
+    else
+      let mat3 = Array.make_matrix (Array.length mat1)
+          (Array.length mat1.(0)) 0.0 in
+      for i = 0 to ((Array.length mat1)-1) do 
+        for j = 0 to ((Array.length mat1.(0))-1) do
+          mat3.(i).(j) <- mat2.(i).(j) +. mat1.(i).(j);
+        done
+      done 
+              ; mat3
 
   let mat_sub (mat1:mat) (mat2:mat):mat = 
     if (Array.length mat1 <> Array.length mat2) ||
-      (Array.length mat1.(0) <> Array.length mat2.(0)) 
-      then raise InvalidDims 
-      else
-    let mat3 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat3.(i).(j) <- mat1.(i).(j) -. mat2.(i).(j);
-      done
-    done 
-            ; mat3
+       (Array.length mat1.(0) <> Array.length mat2.(0)) 
+    then raise InvalidDims 
+    else
+      let mat3 = Array.make_matrix (Array.length mat1)
+          (Array.length mat1.(0)) 0.0 in
+      for i = 0 to ((Array.length mat1)-1) do 
+        for j = 0 to ((Array.length mat1.(0))-1) do
+          mat3.(i).(j) <- mat1.(i).(j) -. mat2.(i).(j);
+        done
+      done 
+              ; mat3
 
   let scale (const:float) (mat1:mat) :mat = 
     let mat2 = Array.make_matrix (Array.length mat1)
@@ -205,12 +206,12 @@ module Math = struct
 
   let transpose (mat1:mat) :mat = 
     let mat2 = Array.make_matrix (Array.length mat1.(0))
-    (Array.length mat1) 0.0 in
+        (Array.length mat1) 0.0 in
     for i = 0 to ((Array.length mat1)-1) do 
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat2.(j).(i) <- mat1.(i).(j);
       done
     done 
-    ; mat2
-    
+            ; mat2
+
 end

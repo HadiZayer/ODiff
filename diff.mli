@@ -61,12 +61,15 @@ val get_grad : var -> float
     yields an empty array, a cur_grad of 1.0, and a grad of 0.0 *)
 val init : float -> var
 
+(** [forward m x] inputs x into the operations contained in the forward function
+    contained in m *)
 val forward : model -> var -> var
 
-(** [backward x] runs backwards propagation, with x as a starting point. *)
-val backward : var -> unit
-
+(** [model_params m] is the var list stored in the params parameter of m *)
 val model_params : model -> var list
+
+(** [backward x] runs backwards propagation, with x as a starting point *)
+val backward : var -> unit
 
 val print : string -> unit
 
@@ -74,22 +77,39 @@ module StdOps : sig
 
   (** [add arg0 arg1] is the var record with a value of the sum of the values
       of arg0 and arg1, children of the array containing arg0 and arg1, op of a
-      function that yields an array [1;1], a cur_grad of 1.0, and a grad of 0.0
+      function that yields an array [|1.0;1.0|], a cur_grad of 1.0, and a grad 
+      of 0.0
   *)
   val add : var -> var -> var	
 
+  (** [add arg0 arg1] is the var record with a value of the subraction of the
+      value of arg1 from arg0, children of the array containing arg0 and arg1, 
+      op of a function that yields an array [|1.0;-1.0|], a cur_grad of 1.0, and 
+      a grad of 0.0
+  *)
   val sub : var -> var -> var 
 
   (** [mul arg0 arg1] is the var record with a value of the product of the 
       values of arg0 and arg1, children of the array containing arg0 and arg1,
-      op of a function that yields an array [arg1.value;arg2.value], a cur_grad
-      of 1.0, and a grad of 0.0 *)
+      op of a function that yields an array [|arg1.value;arg2.value|], a 
+      cur_grad of 1.0, and a grad of 0.0 *)
   val mul : var -> var -> var
 
+  (** [pow arg0 fl] is the var record with a value of arg0 raised to fl, 
+      children of the array containing arg0, op of a function that yields an 
+      array [|fl*.arg0.value**(fl -. 1.0)|], a cur_grad of 1.0, and a grad of 
+      0.0 *)
   val pow : var -> float -> var
 
+  (** [sin arg0] is the var record with a value of the sine of arg0, children of
+      the array containing arg0, op of a function that yields an array 
+      containing the cosine of arg0, a cur_grad of 1.0, and a grad of 0.0 *)
   val sin : var -> var
 
+  (** [cos arg0] is the var record with a value of the cosine of arg0, children 
+      of the array containing arg0, op of a function that yields an array 
+      containing the negative sine of arg0, a cur_grad of 1.0, and a grad of 
+      0.0 *)
   val cos : var -> var
 end
 
@@ -127,6 +147,6 @@ module Math : sig
   val scale : float -> mat -> mat 
 
   val map : ('a -> 'b) -> ('a array) array -> 'b -> ('b array) array 
-  
+
   val transpose: mat -> mat
 end
