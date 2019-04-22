@@ -126,7 +126,7 @@ module Math : sig
   (**[scale c M] returns the matrix M scaled by c (cM)*)
   val scale : float -> mat -> mat 
 
-  val map : ('a -> 'b) -> ('a array) array -> 'b -> ('b array) array 
+  val map : (float -> float) -> mat -> mat
   
   val transpose: mat -> mat
 end
