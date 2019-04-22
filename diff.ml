@@ -156,5 +156,54 @@ module Math = struct
     done; 
     output
 
-end
+  let mat_add (mat1:mat) (mat2:mat):mat = 
+    let mat3 = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat3.(i).(j) <- mat2.(i).(j) +. mat1.(i).(j);
+      done
+    done 
+            ; mat3
 
+  let mat_sub (mat1:mat) (mat2:mat):mat = 
+    let mat3 = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat3.(i).(j) <- mat1.(i).(j) -. mat2.(i).(j);
+      done
+    done 
+            ; mat3
+
+  let scale (const:float) (mat1:mat) :mat = 
+    let mat2 = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat2.(i).(j) <- mat1.(i).(j) *. const;
+      done
+    done 
+            ; mat2
+
+  let scale (const:float) (mat1:mat) :mat = 
+    let mat2 = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat2.(i).(j) <- mat1.(i).(j) *. const;
+      done
+    done 
+            ; mat2
+
+  let map f (mat1:mat) :mat = 
+    let mat2 = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat2.(i).(j) <- f mat1.(i).(j);
+      done
+    done 
+            ; mat2
+
+end
