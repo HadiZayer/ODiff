@@ -1,4 +1,3 @@
-
 type var = {mutable value: float; children : var array; 
             op: var array -> float array; mutable cur_grad : float; mutable grad : float}
 
@@ -186,16 +185,6 @@ module Math = struct
     done 
             ; mat2
 
-  let scale (const:float) (mat1:mat) :mat = 
-    let mat2 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat2.(i).(j) <- mat1.(i).(j) *. const;
-      done
-    done 
-            ; mat2
-
   let map f (mat1:mat) :mat = 
     let mat2 = Array.make_matrix (Array.length mat1)
         (Array.length mat1.(0)) 0.0 in
@@ -206,4 +195,14 @@ module Math = struct
     done 
             ; mat2
 
+  let transpose (mat1:mat) :mat = 
+    let mat2 = Array.make_matrix (Array.length mat1.(0))
+    (Array.length mat1) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat2.(j).(i) <- mat1.(i).(j);
+      done
+    done 
+    ; mat2
+    
 end
