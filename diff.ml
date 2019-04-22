@@ -139,3 +139,22 @@ module Optim = struct
     in zero_grad_helper optimizer.params
 end
 
+module Math = struct
+  type mat = (float array) array
+  exception InvalidDims
+
+  let mat_mul (m0:mat) (m1:mat) : mat =
+    if Array.length m0.(0) != Array.length m1
+    then raise InvalidDims;
+    let output = Array.make_matrix (Array.length m0) (Array.length m1.(0)) 0.0 in 
+    for a=0 to (Array.length m0 - 1) do
+      for b=0 to (Array.length m1.(0) - 1) do
+        for c=0 to (Array.length m1 - 1) do
+          output.(a).(b) <-  output.(a).(b) +. (m0.(a).(c) *. m1.(c).(b))
+        done
+      done
+    done; 
+    output
+
+end
+
