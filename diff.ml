@@ -194,9 +194,9 @@ module Math = struct
     done 
             ; mat2
 
-  let map f mat1 initial_val= 
+  let map (f:float->float) (mat1:mat):mat = 
     let mat2 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) initial_val in
+        (Array.length mat1.(0)) 0.0 in
     for i = 0 to ((Array.length mat1)-1) do 
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat2.(i).(j) <- f mat1.(i).(j);
