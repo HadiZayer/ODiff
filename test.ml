@@ -10,7 +10,7 @@ let approx_eq (f1:float) (f2:float) : bool =
 (** [ make_backward_test (name:string) (input:float) 
   (expected_output:float)]  constructs an OUnit test named [name] 
   that asserts the quality of [expected_output] with 
-  [approx_eq input expected_output. *) 
+  [approx_eq input expected_output]. *) 
 let make_backward_test (name:string) (input:float) 
 (expected_output:float) =
 name >::(fun _ -> assert_equal (approx_eq input expected_output) true)
@@ -145,9 +145,49 @@ let backward_tests = [
   ans_eq14 3.26680967993;
 ]
 
+(** ADD COMMENTS!!!!!! The 
+  equality only applies to float. *)
+let matrix_eq mat1 mat2 : bool= 
+  let ans = ref true in 
+  if (Array.length mat1 <> Array.length mat2) ||
+      (Array.length mat1.(0) <> Array.length mat2.(0)) 
+      then false else (
+      for i = 0 to ((Array.length mat1)-1) do 
+          for j = 0 to ((Array.length mat1.(0))-1) do
+          if not (approx_eq mat1.(i).(j) mat2.(i).(j)) then ans:=false else
+          ()
+          done
+      done; 
+      !ans )
+
+
+(** [ make_matrix_mul_test (name:string) (input:float) 
+  (expected_output:float)]  constructs an OUnit test named [name] 
+  that asserts the quality of [expected_output] with 
+  [matrix_eq (Math.mat_mul input1 input2) expected_output]. *) 
+let make_matrix_mul_test (name:string) (input1) (input2)
+(expected_output) =
+name >::(fun _ -> assert_equal (matrix_eq
+  (Math.mat_mul input1 input2) 
+  expected_output) true)
+
+let matrix_tests = [
+  make_matrix_mul_test "1x1 matrix with identity matrix" 
+  [|[|22.03|]|] [|[|1.0|]|] [|[|22.03|]|] ;
+  make_matrix_mul_test "complex multiplication test with 1x1 matrix" 
+  [|[|88.93|]|] [|[|33.322|]|] [|[|2963.32546|]|] ;
+  make_matrix_mul_test "basic multiplication test with 2x2 matrix" 
+  [|[|1.0;1.0|];[|1.0;1.0|]|] [|[|1.0;1.0|];[|1.0;1.0|]|]
+  [|[|2.0;2.0|];[|2.0;2.0|]|] ;
+  make_matrix_mul_test "2x2 matrix with identity matrix" 
+  [|[|42.42;10.0|];[|11.0;13.0|]|] [|[|1.0;0.0|];[|0.0;1.0|]|]
+  [|[|42.42;10.0|];[|11.0;13.0|]|] ;
+]
+
 let suite = 
  "test suite for A6"  >::: List.flatten [
     backward_tests;
+    matrix_tests;
 ]
 
 let _ = run_test_tt_main suite

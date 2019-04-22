@@ -143,7 +143,7 @@ module Math = struct
   exception InvalidDims
 
   let mat_mul (m0:mat) (m1:mat) : mat =
-    if Array.length m0.(0) != Array.length m1
+    if Array.length m0.(0) <> Array.length m1
     then raise InvalidDims;
     let output = Array.make_matrix (Array.length m0) (Array.length m1.(0)) 0.0 in 
     for a=0 to (Array.length m0 - 1) do
@@ -156,8 +156,8 @@ module Math = struct
     output
 
   let mat_add (mat1:mat) (mat2:mat):mat = 
-    if (Array.length mat1 != Array.length mat2) ||
-      (Array.length mat1.(0) != Array.length mat2.(0)) 
+    if (Array.length mat1 <> Array.length mat2) ||
+      (Array.length mat1.(0) <> Array.length mat2.(0)) 
       then raise InvalidDims 
       else
     let mat3 = Array.make_matrix (Array.length mat1)
@@ -170,8 +170,8 @@ module Math = struct
             ; mat3
 
   let mat_sub (mat1:mat) (mat2:mat):mat = 
-    if (Array.length mat1 != Array.length mat2) ||
-      (Array.length mat1.(0) != Array.length mat2.(0)) 
+    if (Array.length mat1 <> Array.length mat2) ||
+      (Array.length mat1.(0) <> Array.length mat2.(0)) 
       then raise InvalidDims 
       else
     let mat3 = Array.make_matrix (Array.length mat1)
@@ -193,9 +193,9 @@ module Math = struct
     done 
             ; mat2
 
-  let map f (mat1:mat) :mat = 
+  let map f mat1 initial_val= 
     let mat2 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
+        (Array.length mat1.(0)) initial_val in
     for i = 0 to ((Array.length mat1)-1) do 
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat2.(i).(j) <- f mat1.(i).(j);
