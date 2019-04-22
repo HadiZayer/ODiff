@@ -156,6 +156,10 @@ module Math = struct
     output
 
   let mat_add (mat1:mat) (mat2:mat):mat = 
+    if (Array.length mat1 != Array.length mat2) ||
+      (Array.length mat1.(0) != Array.length mat2.(0)) 
+      then raise InvalidDims 
+      else
     let mat3 = Array.make_matrix (Array.length mat1)
         (Array.length mat1.(0)) 0.0 in
     for i = 0 to ((Array.length mat1)-1) do 
@@ -166,6 +170,10 @@ module Math = struct
             ; mat3
 
   let mat_sub (mat1:mat) (mat2:mat):mat = 
+    if (Array.length mat1 != Array.length mat2) ||
+      (Array.length mat1.(0) != Array.length mat2.(0)) 
+      then raise InvalidDims 
+      else
     let mat3 = Array.make_matrix (Array.length mat1)
         (Array.length mat1.(0)) 0.0 in
     for i = 0 to ((Array.length mat1)-1) do 
