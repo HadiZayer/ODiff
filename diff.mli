@@ -45,21 +45,23 @@ type var
 (* The abstract type of a model *)
 type model 
 
+type mat = float array array (*TODO: figure out what to do with this*)
+
 (** [get_value x] is the float stored in the value parameter of x *)
-val get_value : var -> float
+val get_value : var -> mat
 
 (** [get_children x] is the var list stored in the children parameter of x *)
-val get_children : var -> var array
+val get_children : var ->  var array
 
 (** [get_op x] is the function stored in the op parameter of x *)
-val get_op : var -> var array -> float array
+val get_op : var -> var array -> mat -> mat array
 
 (** [get_value x] is the float stored in the grad parameter of x *)
-val get_grad : var -> float
+val get_grad : var -> mat
 
 (** [init x] is a var record with a value of x, no children, an op function that
     yields an empty array, a cur_grad of 1.0, and a grad of 0.0 *)
-val init : float -> var
+val init : mat -> var
 
 (** [forward m x] inputs x into the operations contained in the forward function
     contained in m *)
@@ -87,7 +89,7 @@ module StdOps : sig
       op of a function that yields an array [|1.0;-1.0|], a cur_grad of 1.0, and 
       a grad of 0.0
   *)
-  val sub : var -> var -> var 
+  (* val sub : var -> var -> var  *)
 
   (** [mul arg0 arg1] is the var record with a value of the product of the 
       values of arg0 and arg1, children of the array containing arg0 and arg1,
@@ -99,21 +101,21 @@ module StdOps : sig
       children of the array containing arg0, op of a function that yields an 
       array [|fl*.arg0.value**(fl -. 1.0)|], a cur_grad of 1.0, and a grad of 
       0.0 *)
-  val pow : var -> float -> var
+  (* val pow : var -> float -> var *)
 
   (** [sin arg0] is the var record with a value of the sine of arg0, children of
       the array containing arg0, op of a function that yields an array 
       containing the cosine of arg0, a cur_grad of 1.0, and a grad of 0.0 *)
-  val sin : var -> var
+  (* val sin : var -> var *)
 
   (** [cos arg0] is the var record with a value of the cosine of arg0, children 
       of the array containing arg0, op of a function that yields an array 
       containing the negative sine of arg0, a cur_grad of 1.0, and a grad of 
       0.0 *)
-  val cos : var -> var
+  (* val cos : var -> var *)
 end
 
-module Model : sig
+(* module Model : sig
   val linear_model : float -> float -> model
 end
 
@@ -122,11 +124,10 @@ module Optim : sig
   val step : optim -> unit
   val zero_grad : optim -> unit
   val gd : var list -> float -> optim
-end
+end *)
 
 module Math : sig
 
-  type mat = float array array
   exception InvalidDims
 
   (**[matmul a b] takes a matrix of size m x n and matrix of size n x z
@@ -137,6 +138,8 @@ module Math : sig
   (**[mat_add a b] takes two matrices of the same size and returns the sum
    * raises: InvalidDims if a and b don't have the same size*)  
   val mat_add : mat -> mat -> mat
+
+  val add_in_place : mat -> mat -> unit
 
   (**[mat_add a b] takes two matrices of the same size and returns the
    * subtraction
