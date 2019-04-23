@@ -89,7 +89,7 @@ module StdOps : sig
       op of a function that yields an array [|1.0;-1.0|], a cur_grad of 1.0, and 
       a grad of 0.0
   *)
-  (* val sub : var -> var -> var  *)
+  val sub : var -> var -> var 
 
   (** [mul arg0 arg1] is the var record with a value of the product of the 
       values of arg0 and arg1, children of the array containing arg0 and arg1,
@@ -145,6 +145,10 @@ module Math : sig
    * subtraction
    * raises: InvalidDims if a and b don't have the same size*)
   val mat_sub : mat -> mat -> mat
+
+  (**[mat_negate a] takes one matrix  and returns new matrix with 
+  * the negated values of a*)
+  val mat_negate : mat -> mat
 
   (**[scale c M] returns the matrix M scaled by c (cM)*)
   val scale : float -> mat -> mat 

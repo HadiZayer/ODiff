@@ -35,6 +35,16 @@ module Math = struct
       done 
               ; mat3
 
+  let mat_negate (mat1:mat):mat = 
+    let output = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        output.(i).(j) <- -. mat1.(i).(j);
+      done
+    done 
+            ; output
+
   let add_in_place (mat1:mat) (mat2:mat) : unit = 
     if (Array.length mat1 <> Array.length mat2) ||
        (Array.length mat1.(0) <> Array.length mat2.(0)) 
@@ -164,6 +174,7 @@ module StdOps = struct
     let add_grad children out_grad = 
       assert (Array.length children = 2);
       [|out_grad;out_grad|] in
+
     let v = Math.mat_add arg0.value arg1.value in
     let rows = Array.length v in
     let cols = Array.length v.(0) in
@@ -171,12 +182,17 @@ module StdOps = struct
     cur_grad = Array.make_matrix rows cols 1.0;
     grad = Array.make_matrix rows cols 0.0}
 
-(*   let sub arg0 arg1 =
-    let add_grad children = 
+  let sub arg0 arg1 =
+    let sub_grad children out_grad = 
       assert (Array.length children = 2);
-      [|1.0;-1.0|] in
-    let v = arg0.value -. arg1.value in
-    {value=v; children=[|arg0;arg1|]; op=add_grad; cur_grad=1.0; grad=0.0} *)
+      [|out_grad;Math.mat_negate out_grad|] in
+
+    let v = Math.mat_sub arg0.value arg1.value in
+    let rows = Array.length v in
+    let cols = Array.length v.(0) in
+    {value=v; children=[|arg0;arg1|]; op=sub_grad;
+    cur_grad = Array.make_matrix rows cols 1.0;
+    grad = Array.make_matrix rows cols 0.0}
 
   let mul arg0 arg1 =
     let mul_grad children out_grad = 
