@@ -76,6 +76,9 @@ val backward : var -> unit
 val create_eltwise_op : (float -> float) -> (float -> float -> float) -> (var -> var)
 
 
+(** [StdOps] is the module containing operations which can be used on variables,
+    in order to create new variables which can be used in backwards differentiation
+*)
 module StdOps : sig
 
   (** [add arg0 arg1] is the var record with a value of the sum of the values
@@ -117,16 +120,18 @@ module StdOps : sig
 end
 
 (* module Model : sig
-  val linear_model : float -> float -> model
-end
+   val linear_model : float -> float -> model
+   end
 
-module Optim : sig
-  type optim
-  val step : optim -> unit
-  val zero_grad : optim -> unit
-  val gd : var list -> float -> optim
-end *)
+   module Optim : sig
+   type optim
+   val step : optim -> unit
+   val zero_grad : optim -> unit
+   val gd : var list -> float -> optim
+   end *)
 
+(** [Math] is the module containing functions which can be used on the mat type
+    in order to either produce new matrices, or modify existing ones*)
 module Math : sig
 
   exception InvalidDims
@@ -148,15 +153,26 @@ module Math : sig
   val mat_sub : mat -> mat -> mat
 
   (**[mat_negate a] takes one matrix  and returns new matrix with 
-  * the negated values of a*)
+   * the negated values of a*)
   val mat_negate : mat -> mat
 
   (**[scale c M] returns the matrix M scaled by c (cM)*)
   val scale : float -> mat -> mat 
 
+  (** [map f mat1] returns a new matrix which is the result of applying function
+      f to every value contained in the matrix mat1 *)
   val map : (float -> float) -> mat -> mat
 
+  (** [map f mat1 mat2]
+    * f: takes two floats and output a float
+    * mat1: float matrix of size n x m
+    * mat2: float matrix of size n x m
+    * returns: a new matrix of size n x m that is the result of applying
+    * f on each pair of mat1 & mat2 (i.e. f mat1.(i)(j) mat2.(i)(j)) for
+    * all i < n, j < m 
+    * raises: InvalidDims if mat1 and mat2 don't have the same size*)
   val map2 : (float -> float -> float) -> mat -> mat -> mat
 
+  (** [transpose mat1] returns the transpose of mat1 *)
   val transpose: mat -> mat
 end
