@@ -118,8 +118,8 @@ let init x =
   let rows = Array.length x in
   let cols = Array.length x.(0) in
   {value=x; children=[||]; op=id; 
-  cur_grad = Array.make_matrix rows cols 1.0;
-  grad = Array.make_matrix rows cols 0.0}
+   cur_grad = Array.make_matrix rows cols 1.0;
+   grad = Array.make_matrix rows cols 0.0}
 
 
 let forward m x = 
@@ -135,9 +135,9 @@ let backward arg0 : unit=
     for i = 0 to Array.length arg.children - 1 do
       arg.children.(i).cur_grad <- grads.(i);
       Math.add_in_place arg.children.(i).grad arg.children.(i).cur_grad;
-(*       arg.children.(i).grad <- arg.children.(i).grad
-                               +. arg.children.(i).cur_grad; *)
-                               (*TODO: rewrite*)
+      (*       arg.children.(i).grad <- arg.children.(i).grad
+                                     +. arg.children.(i).cur_grad; *)
+      (*TODO: rewrite*)
 
       backward_helper arg.children.(i);
       (* arg0.children.(i).cur_grad <- 1.0; *)
@@ -179,8 +179,8 @@ module StdOps = struct
     let rows = Array.length v in
     let cols = Array.length v.(0) in
     {value=v; children=[|arg0;arg1|]; op=add_grad;
-    cur_grad = Array.make_matrix rows cols 1.0;
-    grad = Array.make_matrix rows cols 0.0}
+     cur_grad = Array.make_matrix rows cols 1.0;
+     grad = Array.make_matrix rows cols 0.0}
 
   let sub arg0 arg1 =
     let sub_grad children out_grad = 
@@ -191,8 +191,8 @@ module StdOps = struct
     let rows = Array.length v in
     let cols = Array.length v.(0) in
     {value=v; children=[|arg0;arg1|]; op=sub_grad;
-    cur_grad = Array.make_matrix rows cols 1.0;
-    grad = Array.make_matrix rows cols 0.0}
+     cur_grad = Array.make_matrix rows cols 1.0;
+     grad = Array.make_matrix rows cols 0.0}
 
   let mul arg0 arg1 =
     let mul_grad children out_grad = 
@@ -204,34 +204,34 @@ module StdOps = struct
     let rows = Array.length v in
     let cols = Array.length v.(0) in
     {value=v; children=[|arg0; arg1|]; op=mul_grad;
-    cur_grad = Array.make_matrix rows cols 1.0;
-    grad = Array.make_matrix rows cols 0.0}
+     cur_grad = Array.make_matrix rows cols 1.0;
+     grad = Array.make_matrix rows cols 0.0}
 
-(*   let pow arg0 fl =
-    let pow_grad children =
-      assert (Array.length children = 1);
-      [|fl *. (children.(0).value ** (fl -. 1.0))|] in
-    let v = arg0.value ** fl in
-    {value=v; children=[|arg0|]; op=pow_grad; cur_grad=1.0;grad=0.0}
+  (*   let pow arg0 fl =
+       let pow_grad children =
+        assert (Array.length children = 1);
+        [|fl *. (children.(0).value ** (fl -. 1.0))|] in
+       let v = arg0.value ** fl in
+  {value=v; children=[|arg0|]; op=pow_grad; cur_grad=1.0;grad=0.0}
 
-  let sin arg0 =
+    let sin arg0 =
     let sin_grad children =
-      assert (Array.length children = 1);
-      [|Pervasives.cos children.(0).value|] in
+    assert (Array.length children = 1);
+    [|Pervasives.cos children.(0).value|] in
     let v = Pervasives.sin arg0.value in
     {value=v; children=[|arg0|]; op=sin_grad; cur_grad=1.0;grad=0.0}
 
-  let cos arg0 =
+    let cos arg0 =
     let cos_grad children =
-      assert (Array.length children = 1);
-      [|-. Pervasives.sin children.(0).value|] in
+    assert (Array.length children = 1);
+    [|-. Pervasives.sin children.(0).value|] in
     let v = Pervasives.cos arg0.value in
     {value=v; children=[|arg0|]; op=cos_grad; cur_grad=1.0;grad=0.0} *)
 
 end
 
 (* module Model = struct
-  let linear_model slope offset =
+   let linear_model slope offset =
     let w = init slope in
     let b = init offset in
     let params = [w;b] in
@@ -239,12 +239,12 @@ end
       StdOps.(add (mul w x) b)
     in
     {params=params; forward=forward}
-end
+   end
 
-module Optim = struct
-  type optim = {step: unit -> unit; params: var list}
+   module Optim = struct
+   type optim = {step: unit -> unit; params: var list}
 
-  let gd params lr = () (*TODO: fix*)
+   let gd params lr = () (*TODO: fix*)
     let step_grad () =
       let rec grad_helper = 
         function
@@ -253,12 +253,12 @@ module Optim = struct
       in grad_helper params in
     {step=step_grad; params=params}
 
-  let step optimizer = optimizer.step()
+   let step optimizer = optimizer.step()
 
-  let zero_grad optimizer = () (*TODO: fix*)
-(*     let rec zero_grad_helper = function
+   let zero_grad optimizer = () (*TODO: fix*)
+   (*     let rec zero_grad_helper = function
       | [] -> ()
       | h::t -> h.grad <- 0.0; zero_grad_helper t
     in zero_grad_helper optimizer.params *)
-end *)
+   end *)
 
