@@ -105,18 +105,9 @@ module StdOps : sig
       children of the array containing arg0, op of a function that yields an 
       array [|fl*.arg0.value**(fl -. 1.0)|], a cur_grad of 1.0, and a grad of 
       0.0 *)
-  (* val pow : var -> float -> var *)
+  val pow : var -> float -> var 
 
-  (** [sin arg0] is the var record with a value of the sine of arg0, children of
-      the array containing arg0, op of a function that yields an array 
-      containing the cosine of arg0, a cur_grad of 1.0, and a grad of 0.0 *)
-  (* val sin : var -> var *)
 
-  (** [cos arg0] is the var record with a value of the cosine of arg0, children 
-      of the array containing arg0, op of a function that yields an array 
-      containing the negative sine of arg0, a cur_grad of 1.0, and a grad of 
-      0.0 *)
-  (* val cos : var -> var *)
 end
 
 (* module Model : sig
