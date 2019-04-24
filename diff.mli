@@ -73,7 +73,8 @@ val model_params : model -> var list
 (** [backward x] runs backwards propagation, with x as a starting point *)
 val backward : var -> unit
 
-val print : string -> unit
+val create_eltwise_op : (float -> float) -> (float -> float -> float) -> (var -> var)
+
 
 module StdOps : sig
 
@@ -154,6 +155,8 @@ module Math : sig
   val scale : float -> mat -> mat 
 
   val map : (float -> float) -> mat -> mat
+
+  val map2 : (float -> float -> float) -> mat -> mat -> mat
 
   val transpose: mat -> mat
 end

@@ -90,6 +90,17 @@ module Math = struct
     done 
             ; mat2
 
+  let map2 (f:float->float->float) (mat1:mat) (mat2:mat):mat = 
+    (*TODO: add dimension check*)
+    let mat3 = Array.make_matrix (Array.length mat1)
+        (Array.length mat1.(0)) 0.0 in
+    for i = 0 to ((Array.length mat1)-1) do 
+      for j = 0 to ((Array.length mat1.(0))-1) do
+        mat3.(i).(j) <- f (mat1.(i).(j)) (mat2.(i).(j));
+      done
+    done 
+            ; mat3
+
   let transpose (mat1:mat) : mat = 
     let mat2 = Array.make_matrix (Array.length mat1.(0))
         (Array.length mat1) 0.0 in
@@ -149,24 +160,17 @@ let backward arg0 : unit=
   Math.add_in_place arg0.grad arg0.cur_grad;
   backward_helper arg0
 
-
-(** Input is in fully evaluated form *)
-let print (input:string) : unit = 
-  match (String.split_on_char ' ' input)with
-  | "add"::"("::"mult"::arg1::arg2::")"::arg3::rest -> 
-    print_endline arg1; print_string " "; print_endline "\\"; 
-    print_string "  "; print_endline "*";
-    print_string " /"; print_endline " \\"; print_string arg2; 
-    print_endline "   \\"; print_endline "     +"; 
-    print_endline "    /"; print_string "   "; print_endline arg3;
-  | "add"::arg1::arg2::rest -> print_endline arg1; print_string " ";
-    print_endline "\\"; print_string "  "; print_endline "+";
-    print_string " "; print_endline "/"; print_endline arg2; 
-  | "mult"::arg1::arg2::rest -> print_endline arg1; print_string " ";
-    print_endline "\\"; print_string "  "; print_endline "*";
-    print_string " "; print_endline "/"; print_endline arg2; 
-  | [single_char] -> print_endline single_char;
-  | _ -> failwith "Error Invalid Input"
+let create_eltwise_op val_eval_f grad_eval_f =
+  let operation arg0 = 
+    let op_grad children out_grad =
+      [|Math.map2 grad_eval_f children.(0).value out_grad|] in
+    let v = Math.map val_eval_f (arg0.value) in
+    let rows = Array.length v in
+    let cols = Array.length v.(0) in
+    {value=v; children=[|arg0|]; op=op_grad;
+    cur_grad = Array.make_matrix rows cols 1.0;
+    grad = Array.make_matrix rows cols 0.0} in
+    operation
 
 
 module StdOps = struct
@@ -207,14 +211,20 @@ module StdOps = struct
     cur_grad = Array.make_matrix rows cols 1.0;
     grad = Array.make_matrix rows cols 0.0}
 
-(*   let pow arg0 fl =
-    let pow_grad children =
-      assert (Array.length children = 1);
-      [|fl *. (children.(0).value ** (fl -. 1.0))|] in
-    let v = arg0.value ** fl in
-    {value=v; children=[|arg0|]; op=pow_grad; cur_grad=1.0;grad=0.0}
+  let pow arg0 fl =
+    let grad_eval x out_grad =
+      fl *. (x ** (fl -. 1.0) *. out_grad) in
+    let value_eval x = x ** fl in
+    create_eltwise_op value_eval grad_eval arg0
 
-  let sin arg0 =
+  let sigmoid arg0 =
+    let e = 2.71828182845904 (*~approximately*) in
+    let eval_value x = (1.) /. (1. +. e ** (-. x)) in
+    (*TODO: figure out a better way to do it*)
+    let grad_eval x out_grad = ((eval_value x) *. (1. -. (eval_value x))) *. out_grad in
+    create_eltwise_op eval_value grad_eval arg0
+
+(*   let sin arg0 =
     let sin_grad children =
       assert (Array.length children = 1);
       [|Pervasives.cos children.(0).value|] in
