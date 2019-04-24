@@ -98,8 +98,8 @@ module Math = struct
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat3.(i).(j) <- f (mat1.(i).(j)) (mat2.(i).(j));
       done
-    done 
-            ; mat3
+    done; 
+    mat3
 
   let transpose (mat1:mat) : mat = 
     let mat2 = Array.make_matrix (Array.length mat1.(0))
@@ -108,8 +108,19 @@ module Math = struct
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat2.(j).(i) <- mat1.(i).(j);
       done
-    done 
-            ; mat2
+    done; 
+    mat2
+
+  let mat_random (n:int) (m:int) (mean) (range): mat = 
+    let mat = Array.make_matrix (n)(m) 0.0 in
+    let uniform_random mean range =
+      Random.float range -. (range /. 2.) +. mean in 
+      for i = 0 to (n-1) do 
+        for j = 0 to (m-1) do
+        mat.(i).(j) <- uniform_random mean range;
+      done
+    done; 
+    mat
 
 end
 
@@ -232,7 +243,6 @@ module StdOps = struct
     [|Pervasives.cos children.(0).value|] in
     let v = Pervasives.sin arg0.value in
     {value=v; children=[|arg0|]; op=sin_grad; cur_grad=1.0;grad=0.0}
-
     let cos arg0 =
     let cos_grad children =
     assert (Array.length children = 1);
@@ -242,35 +252,4 @@ module StdOps = struct
 
 end
 
-(* module Model = struct
-   let linear_model slope offset =
-    let w = init slope in
-    let b = init offset in
-    let params = [w;b] in
-    let forward x =
-      StdOps.(add (mul w x) b)
-    in
-    {params=params; forward=forward}
-   end
-
-   module Optim = struct
-   type optim = {step: unit -> unit; params: var list}
-
-   let gd params lr = () (*TODO: fix*)
-    let step_grad () =
-      let rec grad_helper = 
-        function
-        | [] -> ()
-        | h::t -> h.value <- h.value -. lr *. h.grad; grad_helper t
-      in grad_helper params in
-    {step=step_grad; params=params}
-
-   let step optimizer = optimizer.step()
-
-   let zero_grad optimizer = () (*TODO: fix*)
-   (*     let rec zero_grad_helper = function
-      | [] -> ()
-      | h::t -> h.grad <- 0.0; zero_grad_helper t
-    in zero_grad_helper optimizer.params *)
-   end *)
-
+  
