@@ -205,12 +205,9 @@ let matrix_mul_tests = [
   [|[|42.42;10.0;21.0|];[|11.0;13.0;31.4|];[|11.0;13.0;31.4|]|] 
   [|[|0.0;0.0;0.0|];[|0.0;0.0;0.0|];[|0.0;0.0;0.0|]|]
   [|[|0.0;0.0;0.0|];[|0.0;0.0;0.0|];[|0.0;0.0;0.0|]|] ;
-  (* "wrong verb exception" >:: (fun _-> *)
-(* 
-  assert_raises (InvalidDims) (make_matrix_mul_test "wrong size matrix" 
-  [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
-  [|[|1.0|]|]
-  [|[|0.0;0.0;0.0|];[|0.0;0.0;0.0|];[|0.0;0.0;0.0|]|])  ; *)
+  "Wrong dimensions" >:: (fun _-> assert_raises (Math.InvalidDims) 
+  (fun() -> Math.mat_mul [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
+  [|[|1.0|]|]));
 ]
 
 (** [make_matrix_add_test (name:string) (input1:mat) (input2:mat) 
@@ -251,7 +248,9 @@ let matrix_add_tests = [
   [|[|1.0;-2.0;3.0|];[|-4.0;5.0;6.0|];[|7.0;8.0;-9.0|]|]  
   [|[|10.0;-11.0;12.0|];[|-13.0;14.0;15.0|];[|16.0;17.0;-18.0|]|]
   [|[|11.0;-13.0;15.0|];[|-17.0;19.0;21.0|];[|23.0;25.0;-27.0|]|];
-  (* ADD EXCEPTION CHECKING *)
+  "Wrong dimensions" >:: (fun _-> assert_raises (Math.InvalidDims) 
+  (fun() -> Math.mat_add [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
+  [|[|1.0|]|]));
 ]
 
 (** [make_matrix_neg_test (name:string) (input:mat) 
@@ -323,8 +322,10 @@ let matrix_sub_tests = [
   make_matrix_sub_test "complex addition with negative numbers" 
   [|[|1.0;-2.0;3.0|];[|-4.0;5.0;6.0|];[|7.0;8.0;-9.0|]|]  
   [|[|10.0;-11.0;12.0|];[|-13.0;14.0;15.0|];[|16.0;17.0;-18.0|]|]
-  [|[|-9.0;9.0;-9.0|];[|9.0;-9.0;-9.0|];[|-9.0;-9.0;9.0|]|]  
-  (* ADD EXCEPTION CHECKING *)
+  [|[|-9.0;9.0;-9.0|];[|9.0;-9.0;-9.0|];[|-9.0;-9.0;9.0|]|] ; 
+  "Wrong dimensions" >:: (fun _-> assert_raises (Math.InvalidDims) 
+  (fun() -> Math.mat_sub [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
+  [|[|1.0|]|]));
 ]
 
 (** [make_matrix_scale_test (name:string) (const:float) (matrix:mat) 
