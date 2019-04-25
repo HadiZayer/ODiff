@@ -31,10 +31,23 @@ let make_backward_test (name:string) (input)
   name >::(fun _ -> assert_equal (matrix_eq input expected_output) true)
 
 (* Setting up test for x*x *)
-let x2_var = init [|[|42.0|]|] 
-let x2_output = StdOps.mul x2_var x2_var
-let () = backward x2_output
-let ans_x2 = get_grad x2_var 
+let x2_1_var = init [|[|42.0|]|] 
+let x2_1_output = StdOps.mul x2_1_var x2_1_var
+let () = backward x2_1_output
+let ans_x2_1 = get_grad x2_1_var 
+
+(* Setting up test for x*x 2 by 2 *)
+let x2_2_var = init [|[|42.0;42.0|];[|42.0;42.0|]|] 
+let x2_2_output = StdOps.mul x2_2_var x2_2_var
+let () = backward x2_2_output
+let ans_x2_2 = get_grad x2_2_var 
+
+(* Setting up test for x*y 2 by 3 times 3 by 2 *)
+let x2_3_var = init [|[|42.0;42.0;42.0|];[|42.0;42.0;42.0|]|] 
+let y2_3_var = init [|[|42.0;42.0|];[|42.0;42.0|];[|42.0;42.0|]|] 
+let x2_3_output = StdOps.mul x2_3_var y2_3_var
+let () = backward x2_3_output
+let ans_x2_3 = get_grad x2_3_var 
 
 (* Setting up test for x *)
 let x_var = init [|[|42.0|]|]
@@ -77,13 +90,15 @@ let ans_eq6 = get_grad eq6_var1
 
 
 let backward_tests = [
-  make_backward_test "testing simple polynomial x*x" ans_x2 [|[|84.0|]|];
-  make_backward_test "testing simple linear x" ans_x [|[|1.0|]|];
-  make_backward_test "testing medium polynomial x*x+4" ans_eq1 [|[|84.0|]|];
-  make_backward_test "testing hard polynomial x*x+x+4" ans_eq2 [|[|85.0|]|];
-  make_backward_test "testing small power x^4" ans_eq3 [|[|296352.0|]|];
-  make_backward_test "testing medium power x^8" ans_eq5 [|[|1844314665984.0|]|];
-  make_backward_test "testing large power x^15" ans_eq6 [|[|797225762616485973442560.0|]|];
+  make_backward_test "testing simple polynomial x*x 1 by 1" ans_x2_1 [|[|84.0|]|];
+  make_backward_test "testing simple polynomial x*x 2 by 2" ans_x2_2 [|[|168.0;168.0|];[|168.0;168.0|]|];
+  make_backward_test "testing simple polynomial x*x 2 by 3 times 3 by 2" ans_x2_3 [|[|84.; 84.; 84.0|]; [|84.; 84.; 84.0|]|];
+  make_backward_test "testing simple linear x 1 by 1" ans_x [|[|1.0|]|];
+  make_backward_test "testing medium polynomial x*x+4 1 by 1" ans_eq1 [|[|84.0|]|];
+  make_backward_test "testing hard polynomial x*x+x+4 1 by 1" ans_eq2 [|[|85.0|]|];
+  make_backward_test "testing small power x^4 1 by 1" ans_eq3 [|[|296352.0|]|];
+  make_backward_test "testing medium power x^8 1 by 1" ans_eq5 [|[|1844314665984.0|]|];
+  make_backward_test "testing large power x^15 1 by 1" ans_eq6 [|[|797225762616485973442560.0|]|];
 ] 
 
 
