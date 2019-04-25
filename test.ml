@@ -90,15 +90,24 @@ let ans_eq6 = get_grad eq6_var1
 
 
 let backward_tests = [
-  make_backward_test "testing simple polynomial x*x 1 by 1" ans_x2_1 [|[|84.0|]|];
-  make_backward_test "testing simple polynomial x*x 2 by 2" ans_x2_2 [|[|168.0;168.0|];[|168.0;168.0|]|];
-  make_backward_test "testing simple polynomial x*x 2 by 3 times 3 by 2" ans_x2_3 [|[|84.; 84.; 84.0|]; [|84.; 84.; 84.0|]|];
-  make_backward_test "testing simple linear x 1 by 1" ans_x [|[|1.0|]|];
-  make_backward_test "testing medium polynomial x*x+4 1 by 1" ans_eq1 [|[|84.0|]|];
-  make_backward_test "testing hard polynomial x*x+x+4 1 by 1" ans_eq2 [|[|85.0|]|];
-  make_backward_test "testing small power x^4 1 by 1" ans_eq3 [|[|296352.0|]|];
-  make_backward_test "testing medium power x^8 1 by 1" ans_eq5 [|[|1844314665984.0|]|];
-  make_backward_test "testing large power x^15 1 by 1" ans_eq6 [|[|797225762616485973442560.0|]|];
+  make_backward_test "testing simple polynomial x*x 1 by 1" 
+    ans_x2_1 [|[|84.0|]|];
+  make_backward_test "testing simple polynomial x*x 2 by 2" 
+    ans_x2_2 [|[|168.0;168.0|];[|168.0;168.0|]|];
+  make_backward_test "testing simple polynomial x*x 2 by 3 times 3 by 2" 
+    ans_x2_3 [|[|84.; 84.; 84.0|]; [|84.; 84.; 84.0|]|];
+  make_backward_test "testing simple linear x 1 by 1" 
+    ans_x [|[|1.0|]|];
+  make_backward_test "testing medium polynomial x*x+4 1 by 1" 
+    ans_eq1 [|[|84.0|]|];
+  make_backward_test "testing hard polynomial x*x+x+4 1 by 1" 
+    ans_eq2 [|[|85.0|]|];
+  make_backward_test "testing small power x^4 1 by 1" 
+    ans_eq3 [|[|296352.0|]|];
+  make_backward_test "testing medium power x^8 1 by 1" 
+    ans_eq5 [|[|1844314665984.0|]|];
+  make_backward_test "testing large power x^15 1 by 1" 
+    ans_eq6 [|[|797225762616485973442560.0|]|];
 ] 
 
 
@@ -147,7 +156,8 @@ let matrix_mul_tests = [
     [|[|0.0;0.0;0.0|];[|0.0;0.0;0.0|];[|0.0;0.0;0.0|]|]
     [|[|0.0;0.0;0.0|];[|0.0;0.0;0.0|];[|0.0;0.0;0.0|]|] ;
   "Wrong dimensions" >:: (fun _-> assert_raises (Math.InvalidDims) 
-                             (fun() -> Math.mat_mul [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
+                             (fun() -> Math.mat_mul 
+                                 [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
                                  [|[|1.0|]|]));
 ]
 
@@ -190,7 +200,8 @@ let matrix_add_tests = [
     [|[|10.0;-11.0;12.0|];[|-13.0;14.0;15.0|];[|16.0;17.0;-18.0|]|]
     [|[|11.0;-13.0;15.0|];[|-17.0;19.0;21.0|];[|23.0;25.0;-27.0|]|];
   "Wrong dimensions" >:: (fun _-> assert_raises (Math.InvalidDims) 
-                             (fun() -> Math.mat_add [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
+                             (fun() -> Math.mat_add 
+                                 [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
                                  [|[|1.0|]|]));
 ]
 
@@ -265,7 +276,8 @@ let matrix_sub_tests = [
     [|[|10.0;-11.0;12.0|];[|-13.0;14.0;15.0|];[|16.0;17.0;-18.0|]|]
     [|[|-9.0;9.0;-9.0|];[|9.0;-9.0;-9.0|];[|-9.0;-9.0;9.0|]|] ; 
   "Wrong dimensions" >:: (fun _-> assert_raises (Math.InvalidDims) 
-                             (fun() -> Math.mat_sub [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
+                             (fun() -> Math.mat_sub 
+                                 [|[|1.0;1.0;1.0|];[|1.0;1.0;2.0|];[|3.0;2.0;1.0|]|] 
                                  [|[|1.0|]|]));
 ]
 

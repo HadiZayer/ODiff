@@ -1,126 +1,121 @@
 type mat = (float array) array
 
 type var = {mutable value: mat; children : var array; 
-            op: var array -> mat -> mat array; mutable cur_grad : mat; mutable grad : mat}
+            op: var array -> mat -> mat array; mutable cur_grad : mat; 
+            mutable grad : mat}
 
 type model = {params: var list; forward: var -> var}
 
 module Math = struct
   exception InvalidDims
 
-  let mat_mul (m0:mat) (m1:mat) : mat =
-    if Array.length m0.(0) <> Array.length m1
+  let mat_mul (mat0:mat) (mat1:mat) : mat =
+    if Array.length mat0.(0) <> Array.length mat1
     then raise InvalidDims;
-    let output = Array.make_matrix (Array.length m0) (Array.length m1.(0)) 0.0 in 
-    for a=0 to (Array.length m0 - 1) do
-      for b=0 to (Array.length m1.(0) - 1) do
-        for c=0 to (Array.length m1 - 1) do
-          output.(a).(b) <-  output.(a).(b) +. (m0.(a).(c) *. m1.(c).(b))
+    let mat2 = Array.make_matrix (Array.length mat0) (Array.length mat1.(0)) 0.0
+    in 
+    for a=0 to (Array.length mat0 - 1) do
+      for b=0 to (Array.length mat1.(0) - 1) do
+        for c=0 to (Array.length mat1 - 1) do
+          mat2.(a).(b) <-  mat2.(a).(b) +. (mat0.(a).(c) *. mat1.(c).(b))
         done
       done
-    done; 
-    output
+    done
+          ; mat2
 
-  let mat_add (mat1:mat) (mat2:mat):mat = 
-    if (Array.length mat1 <> Array.length mat2) ||
-       (Array.length mat1.(0) <> Array.length mat2.(0)) 
+  let mat_add (mat0:mat) (mat1:mat):mat = 
+    if (Array.length mat0 <> Array.length mat1) ||
+       (Array.length mat0.(0) <> Array.length mat1.(0)) 
     then raise InvalidDims 
     else
-      let mat3 = Array.make_matrix (Array.length mat1)
-          (Array.length mat1.(0)) 0.0 in
-      for i = 0 to ((Array.length mat1)-1) do 
-        for j = 0 to ((Array.length mat1.(0))-1) do
-          mat3.(i).(j) <- mat2.(i).(j) +. mat1.(i).(j);
+      let mat2 = Array.make_matrix (Array.length mat0)
+          (Array.length mat0.(0)) 0.0 in
+      for i = 0 to ((Array.length mat0)-1) do 
+        for j = 0 to ((Array.length mat0.(0))-1) do
+          mat2.(i).(j) <- mat1.(i).(j) +. mat0.(i).(j);
         done
       done 
-              ; mat3
+              ; mat2
 
-  let mat_negate (mat1:mat):mat = 
-    let output = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        output.(i).(j) <- -. mat1.(i).(j);
-      done
-    done 
-            ; output
-
-  let add_in_place (mat1:mat) (mat2:mat) : unit = 
-    if (Array.length mat1 <> Array.length mat2) ||
-       (Array.length mat1.(0) <> Array.length mat2.(0)) 
+  let add_in_place (mat0:mat) (mat1:mat) : unit = 
+    if (Array.length mat0 <> Array.length mat1) ||
+       (Array.length mat0.(0) <> Array.length mat1.(0)) 
     then raise InvalidDims 
     else
-      for i = 0 to ((Array.length mat1)-1) do 
-        for j = 0 to ((Array.length mat1.(0))-1) do
-          mat1.(i).(j) <- mat2.(i).(j) +. mat1.(i).(j);
+      for i = 0 to ((Array.length mat0)-1) do 
+        for j = 0 to ((Array.length mat0.(0))-1) do
+          mat0.(i).(j) <- mat1.(i).(j) +. mat0.(i).(j);
         done
       done 
 
-  let mat_sub (mat1:mat) (mat2:mat):mat = 
-    if (Array.length mat1 <> Array.length mat2) ||
-       (Array.length mat1.(0) <> Array.length mat2.(0)) 
+  let mat_sub (mat0:mat) (mat1:mat):mat = 
+    if (Array.length mat0 <> Array.length mat1) ||
+       (Array.length mat0.(0) <> Array.length mat1.(0)) 
     then raise InvalidDims 
     else
-      let mat3 = Array.make_matrix (Array.length mat1)
-          (Array.length mat1.(0)) 0.0 in
-      for i = 0 to ((Array.length mat1)-1) do 
-        for j = 0 to ((Array.length mat1.(0))-1) do
-          mat3.(i).(j) <- mat1.(i).(j) -. mat2.(i).(j);
+      let mat2 = Array.make_matrix (Array.length mat0)
+          (Array.length mat0.(0)) 0.0 in
+      for i = 0 to ((Array.length mat0)-1) do 
+        for j = 0 to ((Array.length mat0.(0))-1) do
+          mat2.(i).(j) <- mat0.(i).(j) -. mat1.(i).(j);
         done
       done 
-              ; mat3
+              ; mat2
 
-  let scale (const:float) (mat1:mat) :mat = 
-    let mat2 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat2.(i).(j) <- mat1.(i).(j) *. const;
+  let scale (const:float) (mat0:mat) :mat = 
+    let mat1 = Array.make_matrix (Array.length mat0)
+        (Array.length mat0.(0)) 0.0 in
+    for i = 0 to ((Array.length mat0)-1) do 
+      for j = 0 to ((Array.length mat0.(0))-1) do
+        mat1.(i).(j) <- mat0.(i).(j) *. const;
       done
     done 
-            ; mat2
+            ; mat1
 
-  let map (f:float->float) (mat1:mat):mat = 
-    let mat2 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat2.(i).(j) <- f mat1.(i).(j);
+  let mat_negate (mat0:mat):mat = 
+    scale (-1.0) mat0
+
+  let map (f:float->float) (mat0:mat):mat = 
+    let mat1 = Array.make_matrix (Array.length mat0)
+        (Array.length mat0.(0)) 0.0 in
+    for i = 0 to ((Array.length mat0)-1) do 
+      for j = 0 to ((Array.length mat0.(0))-1) do
+        mat1.(i).(j) <- f mat0.(i).(j);
       done
     done 
-            ; mat2
+            ; mat1
 
-  let map2 (f:float->float->float) (mat1:mat) (mat2:mat):mat = 
+  let map2 (f:float->float->float) (mat0:mat) (mat1:mat):mat = 
     (*TODO: add dimension check*)
-    let mat3 = Array.make_matrix (Array.length mat1)
-        (Array.length mat1.(0)) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat3.(i).(j) <- f (mat1.(i).(j)) (mat2.(i).(j));
-      done
-    done; 
-    mat3
-
-  let transpose (mat1:mat) : mat = 
-    let mat2 = Array.make_matrix (Array.length mat1.(0))
-        (Array.length mat1) 0.0 in
-    for i = 0 to ((Array.length mat1)-1) do 
-      for j = 0 to ((Array.length mat1.(0))-1) do
-        mat2.(j).(i) <- mat1.(i).(j);
+    let mat2 = Array.make_matrix (Array.length mat0)
+        (Array.length mat0.(0)) 0.0 in
+    for i = 0 to ((Array.length mat0)-1) do 
+      for j = 0 to ((Array.length mat0.(0))-1) do
+        mat2.(i).(j) <- f (mat0.(i).(j)) (mat1.(i).(j));
       done
     done; 
     mat2
 
-  let mat_random (n:int) (m:int): mat = 
-    let mat = Array.make_matrix (n)(m) 0.0 in
-    let uniform_random mean range =
-      Random.float range -. (range /. 2.) +. mean in 
-      for i = 0 to (n-1) do 
-        for j = 0 to (m-1) do
-        mat.(i).(j) <- uniform_random 0.0 2.0;
+  let transpose (mat0:mat) : mat = 
+    let mat1 = Array.make_matrix (Array.length mat0.(0))
+        (Array.length mat0) 0.0 in
+    for i = 0 to ((Array.length mat0)-1) do 
+      for j = 0 to ((Array.length mat0.(0))-1) do
+        mat1.(j).(i) <- mat0.(i).(j);
       done
     done; 
-    mat
+    mat1
+
+  let mat_random (n:int) (m:int): mat = 
+    let mat0 = Array.make_matrix (n)(m) 0.0 in
+    let uniform_random mean range =
+      Random.float range -. (range /. 2.) +. mean in 
+    for i = 0 to (n-1) do 
+      for j = 0 to (m-1) do
+        mat0.(i).(j) <- uniform_random 0.0 2.0;
+      done
+    done; 
+    mat0
 
 end
 
@@ -144,25 +139,13 @@ let init x =
    grad = Array.make_matrix rows cols 0.0}
 
 
-let forward m x = 
-  m.forward x
-
-let model_params m =
-  m.params (*TODO: decide where to locate this + add to mli*)
-
-
 let backward arg0 : unit=
   let rec backward_helper arg : unit =
     let grads = arg.op arg.children arg.cur_grad in
     for i = 0 to Array.length arg.children - 1 do
       arg.children.(i).cur_grad <- grads.(i);
       Math.add_in_place arg.children.(i).grad arg.children.(i).cur_grad;
-      (*       arg.children.(i).grad <- arg.children.(i).grad
-                                     +. arg.children.(i).cur_grad; *)
-      (*TODO: rewrite*)
-
       backward_helper arg.children.(i);
-      (* arg0.children.(i).cur_grad <- 1.0; *)
     done
   in
   let rows = Array.length arg0.value in
@@ -179,9 +162,9 @@ let create_eltwise_op val_eval_f grad_eval_f =
     let rows = Array.length v in
     let cols = Array.length v.(0) in
     {value=v; children=[|arg0|]; op=op_grad;
-    cur_grad = Array.make_matrix rows cols 1.0;
-    grad = Array.make_matrix rows cols 0.0} in
-    operation
+     cur_grad = Array.make_matrix rows cols 1.0;
+     grad = Array.make_matrix rows cols 0.0} in
+  operation
 
 
 module StdOps = struct
@@ -234,8 +217,8 @@ module StdOps = struct
   let sigmoid arg0 =
     let e = 2.71828182845904 (*~approximately*) in
     let eval_value x = (1.) /. (1. +. e ** (-. x)) in
-    (*TODO: figure out a better way to do it*)
-    let grad_eval x out_grad = ((eval_value x) *. (1. -. (eval_value x))) *. out_grad in
+    let grad_eval x out_grad = ((eval_value x) *. (1. -. (eval_value x))) *. 
+                               out_grad in
     create_eltwise_op eval_value grad_eval arg0
 
   let relu arg0 =
@@ -243,71 +226,57 @@ module StdOps = struct
     let grad_eval x out_grad = if x > 0.0 then out_grad else 0.0 in
     create_eltwise_op eval_value grad_eval arg0
 
-(*
-    let sin arg0 =
-    let sin_grad children =
-    assert (Array.length children = 1);
-    [|Pervasives.cos children.(0).value|] in
-    let v = Pervasives.sin arg0.value in
-    {value=v; children=[|arg0|]; op=sin_grad; cur_grad=1.0;grad=0.0}
-    let cos arg0 =
-    let cos_grad children =
-    assert (Array.length children = 1);
-    [|-. Pervasives.sin children.(0).value|] in
-    let v = Pervasives.cos arg0.value in
-    {value=v; children=[|arg0|]; op=cos_grad; cur_grad=1.0;grad=0.0} *)
+end
+
+module Layers = struct
+
+  (*layer abstract type*)
+  type layer = {params: var list; forward: var -> var}
+
+  (** [linear n m] creates a linear layer with weights matrix W of size n x m
+   * the forward of the layer (with argument x) is simply Wx
+   * x has to have size m x b. output size is n x b *)
+  let linear n m =
+    let w = init (Math.mat_random n m) in
+    let forward = StdOps.mul w in
+    let params = [w] in
+    {params=params; forward=forward}
+
+  (** [forward l x] applies the layer l on variable x, and
+      generate an output var *)
+  let forward l x = l.forward x
+
+  (** [params l] returns list of the parameters used in layer l*)
+  let params l = l.params
 
 end
 
-  module Layers = struct
-   
-   (*layer abstract type*)
-    type layer = {params: var list; forward: var -> var}
+module Optim = struct
+  type optim = {step: unit -> unit; params: var list}
 
-    (** [linear n m] creates a linear layer with weights matrix W of size n x m
-     * the forward of the layer (with argument x) is simply Wx
-     * x has to have size m x b. output size is n x b *)
-    let linear n m =
-      let w = init (Math.mat_random n m) in
-      let forward = StdOps.mul w in
-      let params = [w] in
-      {params=params; forward=forward}
-
-    (** [forward l x] applies the layer l on variable x, and
-    generate an output var *)
-    let forward l x = l.forward x
-
-    (** [params l] returns list of the parameters used in layer l*)
-    let params l = l.params
-
-  end
-
-   module Optim = struct
-   type optim = {step: unit -> unit; params: var list}
-
-   let gd params lr = 
+  let gd params lr = 
     let step_grad () =
       let rec grad_helper = 
         function
         | [] -> ()
         | h::t -> 
-        Math.add_in_place h.value (Math.scale (-.lr)  h.grad); grad_helper t
+          Math.add_in_place h.value (Math.scale (-.lr)  h.grad); grad_helper t
       in grad_helper params in
     {step=step_grad; params=params}
 
-   let step optimizer = optimizer.step()
+  let step optimizer = optimizer.step()
 
-   let zero_grad optimizer = 
-     let zero_matrix (matrix:mat) : unit =
-         for i = 0 to ((Array.length matrix)-1) do 
-           for j = 0 to ((Array.length matrix.(0))-1) do
-            matrix.(i).(j) <- 0.0
-         done
-        done; ()
-      in
+  let zero_grad optimizer = 
+    let zero_matrix (matrix:mat) : unit =
+      for i = 0 to ((Array.length matrix)-1) do 
+        for j = 0 to ((Array.length matrix.(0))-1) do
+          matrix.(i).(j) <- 0.0
+        done
+      done; ()
+    in
     let rec zero_grad_helper = function
       | [] -> ()
       | h::t -> zero_matrix h.grad; zero_grad_helper t
     in zero_grad_helper optimizer.params
-   end
+end
 
