@@ -74,8 +74,8 @@ val model_params : model -> var list
 val backward : var -> unit
 
 (** [create_eltwise_op val_eval_f grad_eval_f] evaluates each element of a matrix 
-using the function [val_eval_f] and using [grad_eval_f] to calculate the gradient
-of that element.*)
+    using the function [val_eval_f] and using [grad_eval_f] to calculate the gradient
+    of that element.*)
 val create_eltwise_op : (float -> float) -> (float -> float -> float) -> (var -> var)
 
 
@@ -86,30 +86,47 @@ module StdOps : sig
 
   (** [add arg0 arg1] is the var record with a value of the sum of the values
       of arg0 and arg1, children of the array containing arg0 and arg1, op of a
-      function that yields an array [|1.0;1.0|], a cur_grad of 1.0, and a grad 
-      of 0.0
+      function that yields an array [|1.0;1.0|], a cur_grad of an array of the 
+      same size as value containing 1.0's, and a grad of the same size 
+      containing 0.0's
   *)
   val add : var -> var -> var	
 
   (** [add arg0 arg1] is the var record with a value of the subraction of the
       value of arg1 from arg0, children of the array containing arg0 and arg1, 
-      op of a function that yields an array [|1.0;-1.0|], a cur_grad of 1.0, and 
-      a grad of 0.0
+      op of a function that yields an array [|1.0;-1.0|], a cur_grad of an array
+      of the same size as value containing 1.0's, and a grad of the same size 
+      containing 0.0's
   *)
   val sub : var -> var -> var 
 
   (** [mul arg0 arg1] is the var record with a value of the product of the 
       values of arg0 and arg1, children of the array containing arg0 and arg1,
-      op of a function that yields an array [|arg1.value;arg2.value|], a 
-      cur_grad of 1.0, and a grad of 0.0 *)
+      op of a function that yields an array [|arg1.value;arg2.value|], a
+      cur_grad of an array of the same size as value containing 1.0's,
+      and a grad of the same size containing 0.0's *)
   val mul : var -> var -> var
 
   (** [pow arg0 fl] is the var record with a value of arg0 raised to fl, 
       children of the array containing arg0, op of a function that yields an 
-      array [|fl*.arg0.value**(fl -. 1.0)|], a cur_grad of 1.0, and a grad of 
-      0.0 *)
+      array [|fl*.arg0.value**(fl -. 1.0)|], a cur_grad of an array of the same
+      size as value containing 1.0's, and a grad of the same size containing 
+      0.0's*)
   val pow : var -> float -> var 
 
+  (** [sigmoid arg0] is the var record with the value of arg0 inputed into the
+      sigmoid function element wise, children of the array containing arg0, op 
+      of a function that applies the derivative of the sigmoid function element 
+      wise, a cur_grad of an array of the same size as value containing 1.0's,
+      and a grad of the same size containing 0.0's*)
+  val sigmoid : mat -> mat
+
+  (** [relu arg0] is the var record with the value of arg0 inputed into the
+      relu (rectified linear units) function element wise, children of the array
+      containing arg0, op of a function that applies the derivative of the relu 
+      function element wise, a cur_grad of an array of the same size as value 
+      containing 1.0's, and a grad of the same size containing 0.0's *)
+  val relu : mat -> mat
 
 end
 
@@ -129,9 +146,9 @@ end
 module Math : sig
 
   (*+ [InvalidDims] is an exception that occurs when the dimensions of the matrices
-  for a particular function are not the dimensions that are expeceted. 
-  For example in addition of matrices the two input matrices have to have the same
-  dimenstions, otherwise InvalidDims is called. *)
+    for a particular function are not the dimensions that are expeceted. 
+    For example in addition of matrices the two input matrices have to have the same
+    dimenstions, otherwise InvalidDims is called. *)
   exception InvalidDims
 
   (**[matmul a b] takes a matrix of size m x n and matrix of size n x z
@@ -144,9 +161,9 @@ module Math : sig
   val mat_add : mat -> mat -> mat
 
   (**[mat_add a b] takes two matrices of the same size and returns the sum. 
-  The difference between this function and [mat_add] is that we alter
-  one of the given matrices rather than create a new one and thus we output
-  a unit.
+     The difference between this function and [mat_add] is that we alter
+     one of the given matrices rather than create a new one and thus we output
+     a unit.
    * raises: InvalidDims if a and b don't have the same size*)
   val add_in_place : mat -> mat -> unit
 
@@ -177,7 +194,8 @@ module Math : sig
   val map2 : (float -> float -> float) -> mat -> mat -> mat
 
   (** [transpose mat1] returns the transpose of mat1 *)
-  val transpose: mat -> mat
+  val transpose : mat -> mat
+
 end
 
 
@@ -189,8 +207,8 @@ end
  * - max_pool layer
  * - RNN layer *)
 module Layers : sig
- 
- (*layer abstract type*)
+
+  (*layer abstract type*)
   type layer 
 
   (** [linear n m] creates a linear layer with weights matrix W of size n x m
@@ -198,7 +216,7 @@ module Layers : sig
   val linear : int -> int -> layer
 
   (** [forward l x] applies the layer l on variable x, and
-  generate an output var *)
+      generate an output var *)
   val forward : layer -> var -> var
 
   (** [params l] returns list of the parameters used in layer l*)
