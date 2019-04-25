@@ -259,7 +259,7 @@ module StdOps = struct
 
 end
 
-  module Layers : struct
+  module Layers = struct
    
    (*layer abstract type*)
     type layer = {params: var list; forward: var -> var}
@@ -269,7 +269,7 @@ end
      * x has to have size m x b. output size is n x b *)
     let linear n m =
       let w = init (Math.mat_random n m) in
-      let forward = StdOps.mat_mul w in
+      let forward = StdOps.mul w in
       let params = [w] in
       {params=params; forward=forward}
 
