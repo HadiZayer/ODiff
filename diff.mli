@@ -162,6 +162,9 @@ module Math : sig
    * the negated values of mat0. *)
   val mat_negate : mat -> mat
 
+  (**[mat_random n m] generates a matrix of size n x m with random parameters*)
+  val mat_random : int -> int -> mat
+
   (**[scale c M] returns the matrix M scaled by c (cM). *)
   val scale : float -> mat -> mat 
 

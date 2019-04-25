@@ -238,7 +238,7 @@ module Layers = struct
    * x has to have size m x b. output size is n x b *)
   let linear n m =
     let w = init (Math.mat_random n m) in
-    let forward = StdOps.mul w in
+    let forward x = StdOps.mul x w in
     let params = [w] in
     {params=params; forward=forward}
 
@@ -259,7 +259,7 @@ module Optim = struct
       let rec grad_helper = 
         function
         | [] -> ()
-        | h::t -> 
+        | h::t ->
           Math.add_in_place h.value (Math.scale (-.lr)  h.grad); grad_helper t
       in grad_helper params in
     {step=step_grad; params=params}
