@@ -176,3 +176,51 @@ module Math : sig
   (** [transpose mat1] returns the transpose of mat1 *)
   val transpose: mat -> mat
 end
+
+
+(** The Layers module essentially generates layers that can be used as 
+ * part of the module.
+ * currently it implements linear layers
+ * potential layers to add in the future:
+ * - convolution layer
+ * - max_pool layer
+ * - RNN layer *)
+module Layers : sig
+ 
+ (*layer abstract type*)
+  type layer 
+
+  (** [linear n m] creates a linear layer with weights matrix W of size n x m
+   * the forward of the layer (with argument x) is simply Wx *)
+  val linear : int -> int -> layer
+
+  (** [forward l x] applies the layer l on variable x, and
+  generate an output var *)
+  val forward : layer -> var -> var
+
+  (** [params l] returns list of the parameters used in layer l*)
+  val params : layer -> var list
+
+end
+
+(** The Optim module contains optimizers to update the model's parameters
+  * currently it implements basic gradient descent
+  * potential optimizers to add in the future:
+  * - Adam
+  * - SGD *)
+module Optim : sig
+
+  (*optimizer abstract type*)
+  type optim
+
+  (**[step optm] performs a single step with optimizer optm*)
+  val step : optim -> unit
+
+  (**[zero_grad optm] zeros out the gradients for all parameters
+    * optm is optimizing over*)
+  val zero_grad : optim -> unit
+
+  (**[gd params lr] generates a classic gradient descent optimizer
+    * that optimizes over the variables in params with learning rate lr*)
+  val gd : var list -> float -> optim
+end

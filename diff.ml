@@ -218,11 +218,18 @@ module StdOps = struct
     let value_eval x = x ** fl in
     create_eltwise_op value_eval grad_eval arg0
 
+  (*----------------non-linearities (activation-functions)----------------*)
+
   let sigmoid arg0 =
     let e = 2.71828182845904 (*~approximately*) in
     let eval_value x = (1.) /. (1. +. e ** (-. x)) in
     (*TODO: figure out a better way to do it*)
     let grad_eval x out_grad = ((eval_value x) *. (1. -. (eval_value x))) *. out_grad in
+    create_eltwise_op eval_value grad_eval arg0
+
+  let relu arg0 =
+    let eval_value x = if x > 0.0 then x else 0.0 in
+    let grad_eval x out_grad = if x > 0.0 then out_grad else 0.0 in
     create_eltwise_op eval_value grad_eval arg0
 
 (*
@@ -242,35 +249,55 @@ module StdOps = struct
 
 end
 
-(* module Model = struct
-   let linear_model slope offset =
-    let w = init slope in
-    let b = init offset in
-    let params = [w;b] in
-    let forward x =
-      StdOps.(add (mul w x) b)
-    in
-    {params=params; forward=forward}
-   end
+  module Layers : struct
+   
+   (*layer abstract type*)
+    type layer = {params: var list; forward: var -> var}
+
+    (** [linear n m] creates a linear layer with weights matrix W of size n x m
+     * the forward of the layer (with argument x) is simply Wx
+     * x has to have size m x b. output size is n x b *)
+    let linear n m =
+      let w = init (Math.mat_random n m) in
+      let forward = StdOps.mat_mul w in
+      let params = [w] in
+      {params=params; forward=forward}
+
+    (** [forward l x] applies the layer l on variable x, and
+    generate an output var *)
+    let forward l x = l.forward x
+
+    (** [params l] returns list of the parameters used in layer l*)
+    let params l = l.params
+
+  end
 
    module Optim = struct
    type optim = {step: unit -> unit; params: var list}
 
-   let gd params lr = () (*TODO: fix*)
+   let gd params lr = 
     let step_grad () =
       let rec grad_helper = 
         function
         | [] -> ()
-        | h::t -> h.value <- h.value -. lr *. h.grad; grad_helper t
+        | h::t -> 
+        Math.add_in_place h.value (Math.scale (-.lr)  h.grad); grad_helper t
       in grad_helper params in
     {step=step_grad; params=params}
 
    let step optimizer = optimizer.step()
 
-   let zero_grad optimizer = () (*TODO: fix*)
-   (*     let rec zero_grad_helper = function
+   let zero_grad optimizer = 
+     let zero_matrix (matrix:mat) : unit =
+         for i = 0 to ((Array.length matrix)-1) do 
+           for j = 0 to ((Array.length matrix.(0))-1) do
+            matrix.(i).(j) <- 0.0
+         done
+        done; ()
+      in
+    let rec zero_grad_helper = function
       | [] -> ()
-      | h::t -> h.grad <- 0.0; zero_grad_helper t
-    in zero_grad_helper optimizer.params *)
-   end *)
+      | h::t -> zero_matrix h.grad; zero_grad_helper t
+    in zero_grad_helper optimizer.params
+   end
 
