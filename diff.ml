@@ -98,8 +98,8 @@ module Math = struct
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat3.(i).(j) <- f (mat1.(i).(j)) (mat2.(i).(j));
       done
-    done 
-            ; mat3
+    done; 
+    mat3
 
   let transpose (mat1:mat) : mat = 
     let mat2 = Array.make_matrix (Array.length mat1.(0))
@@ -108,8 +108,19 @@ module Math = struct
       for j = 0 to ((Array.length mat1.(0))-1) do
         mat2.(j).(i) <- mat1.(i).(j);
       done
-    done 
-            ; mat2
+    done; 
+    mat2
+
+  let mat_random (n:int) (m:int): mat = 
+    let mat = Array.make_matrix (n)(m) 0.0 in
+    let uniform_random mean range =
+      Random.float range -. (range /. 2.) +. mean in 
+      for i = 0 to (n-1) do 
+        for j = 0 to (m-1) do
+        mat.(i).(j) <- uniform_random 0.0 2.0;
+      done
+    done; 
+    mat
 
 end
 
@@ -239,7 +250,6 @@ module StdOps = struct
     [|Pervasives.cos children.(0).value|] in
     let v = Pervasives.sin arg0.value in
     {value=v; children=[|arg0|]; op=sin_grad; cur_grad=1.0;grad=0.0}
-
     let cos arg0 =
     let cos_grad children =
     assert (Array.length children = 1);

@@ -73,6 +73,9 @@ val model_params : model -> var list
 (** [backward x] runs backwards propagation, with x as a starting point *)
 val backward : var -> unit
 
+(** [create_eltwise_op val_eval_f grad_eval_f] evaluates each element of a matrix 
+using the function [val_eval_f] and using [grad_eval_f] to calculate the gradient
+of that element.*)
 val create_eltwise_op : (float -> float) -> (float -> float -> float) -> (var -> var)
 
 
@@ -105,18 +108,9 @@ module StdOps : sig
       children of the array containing arg0, op of a function that yields an 
       array [|fl*.arg0.value**(fl -. 1.0)|], a cur_grad of 1.0, and a grad of 
       0.0 *)
-  (* val pow : var -> float -> var *)
+  val pow : var -> float -> var 
 
-  (** [sin arg0] is the var record with a value of the sine of arg0, children of
-      the array containing arg0, op of a function that yields an array 
-      containing the cosine of arg0, a cur_grad of 1.0, and a grad of 0.0 *)
-  (* val sin : var -> var *)
 
-  (** [cos arg0] is the var record with a value of the cosine of arg0, children 
-      of the array containing arg0, op of a function that yields an array 
-      containing the negative sine of arg0, a cur_grad of 1.0, and a grad of 
-      0.0 *)
-  (* val cos : var -> var *)
 end
 
 (* module Model : sig
@@ -134,6 +128,10 @@ end
     in order to either produce new matrices, or modify existing ones*)
 module Math : sig
 
+  (*+ [InvalidDims] is an exception that occurs when the dimensions of the matrices
+  for a particular function are not the dimensions that are expeceted. 
+  For example in addition of matrices the two input matrices have to have the same
+  dimenstions, otherwise InvalidDims is called. *)
   exception InvalidDims
 
   (**[matmul a b] takes a matrix of size m x n and matrix of size n x z
@@ -145,6 +143,11 @@ module Math : sig
    * raises: InvalidDims if a and b don't have the same size*)  
   val mat_add : mat -> mat -> mat
 
+  (**[mat_add a b] takes two matrices of the same size and returns the sum. 
+  The difference between this function and [mat_add] is that we alter
+  one of the given matrices rather than create a new one and thus we output
+  a unit.
+   * raises: InvalidDims if a and b don't have the same size*)
   val add_in_place : mat -> mat -> unit
 
   (**[mat_add a b] takes two matrices of the same size and returns the
