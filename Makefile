@@ -29,5 +29,13 @@ docs-private: build
 		-inv-merge-ml-mli -m A $(MLIS) $(MLS)
 
 clean:
-	ocamlbuild -clean
+	ocamlbuild -clean 
+	rm *.cmx
+	rm *.cmi
+	rm *.o
+
+demo:
+	opam install csv
+	ocamlfind ocamlopt -o demo -linkpkg -package csv diff.mli diff.ml mnist_demo.ml
+	./demo
 
